@@ -22,3 +22,17 @@ const openings = [
 .app-layout { display: flex; height: 100vh; }
 
 </style>
+
+<style>
+
+#app {
+  margin: 0;
+  padding: 0;
+  justify-content: left;
+}
+
+.main-content {
+  display: flex;
+  justify-content: center;
+}
+</style>
