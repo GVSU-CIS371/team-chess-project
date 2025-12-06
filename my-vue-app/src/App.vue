@@ -9,30 +9,14 @@ const openings = [
 </script>
 
 <template>
-  <div class="app-layout">
+  <v-app>
     <navbar :openings="openings" />
-
-    <main class="main-content">
+    <v-main>
       <router-view />
-    </main>
-  </div>
+    </v-main>
+  </v-app>
 </template>
-
-<style scoped>
-.app-layout { display: flex; height: 100vh; }
-
-</style>
 
 <style>
 
-#app {
-  margin: 0;
-  padding: 0;
-  justify-content: left;
-}
-
-.main-content {
-  display: flex;
-  justify-content: center;
-}
 </style>
