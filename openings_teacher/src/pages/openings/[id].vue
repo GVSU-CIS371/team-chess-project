@@ -1,6 +1,5 @@
 <template>
   <v-container>
-    <v-card>
     <v-row justify="center">
       <v-col v-if="openingData" cols="12" class="text-center">
         <h1 class="text-h3 mb-2">{{ openingData.name }}</h1>
@@ -15,14 +14,21 @@
         <div ref="boardEl" style="width: 400px; max-width: 100%;"></div>
       </v-col>
 
-      <v-col cols="auto">
-        <v-btn>Previous Line</v-btn>
-      </v-col>
-      <v-col cols="auto">
-        <v-btn>Next Line</v-btn>
-      </v-col>
+      <template v-if="openingData">
+        <v-col cols="auto">
+          <v-btn 
+            @click="openingStore.currentLineIndex = Math.max(openingStore.currentLineIndex - 1, 0)">
+            Previous Line
+          </v-btn>
+        </v-col>
+        <v-col cols="auto">
+          <v-btn 
+            @click="openingStore.currentLineIndex = Math.min(openingStore.currentLineIndex + 1, openingData?.lines.length - 1)">
+            Next Line
+          </v-btn>
+        </v-col>
+      </template>
     </v-row>
-    </v-card>
   </v-container>
 </template>
 
