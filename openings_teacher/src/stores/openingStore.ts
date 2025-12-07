@@ -6,14 +6,15 @@ export const useOpeningStore = defineStore('openings', {
   state: () => ({
     openings: [] as opening[],
     selectedOpeningId: null as string | null,
-    selectedLine: null as line | null,
+    currentLineIndex: 0,
+    
   }),
 
   actions: {
     init() {
       this.openings = openingsData as opening[];
       this.selectedOpeningId = null;
-      this.selectedLine = null;
+      this.currentLineIndex = 0;
     },
 
     getOpening(id: string) {

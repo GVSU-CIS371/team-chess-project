@@ -30,9 +30,10 @@
           </template>
 
           <v-list-item
-            v-for="line in opening.lines"
+            v-for="(line, index) in opening.lines"
             :key="line.name"
             :title="line.name"
+            @click="openingStore.currentLineIndex = index"
           ></v-list-item>
         </v-list-group>
       </v-list>
@@ -51,7 +52,7 @@
 
   const drawer = ref(true)
   const openingStore = useOpeningStore()
-  const { openings, selectedOpeningId } = storeToRefs(openingStore)
+  const { openings, selectedOpeningId, currentLineIndex } = storeToRefs(openingStore)
 
   const openedGroups = ref<string[]>([])
 

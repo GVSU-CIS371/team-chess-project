@@ -1,9 +1,10 @@
 <template>
   <v-container>
+    <v-card>
     <v-row justify="center">
       <v-col v-if="openingData" cols="12" class="text-center">
         <h1 class="text-h3 mb-2">{{ openingData.name }}</h1>
-        <h2 class="text-h5 font-weight-light">{{ openingData.lines }}</h2>
+        <h2 v-if="currentLine" class="text-h5 font-weight-light">{{ currentLine.name }}</h2>
         <p class="text-body-1 mt-1">{{ openingData.description }}</p>
       </v-col>
       <v-col v-else>
@@ -21,6 +22,7 @@
         <v-btn>Next Line</v-btn>
       </v-col>
     </v-row>
+    </v-card>
   </v-container>
 </template>
 
@@ -29,7 +31,6 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useOpeningStore } from '@/stores/openingStore.ts'
 import '@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.css';
 
-// This tells TypeScript that a global `window.Chessboard` will exist at runtime.
 declare global {
   interface Window { Chessboard: any; $: any; }
 }
@@ -39,13 +40,18 @@ const props = defineProps<{
 }>();
 
 const openingStore = useOpeningStore();
+const { currentLineIndex } = storeToRefs(openingStore);
 
 const openingData = computed(() => openingStore.getOpening(props.id));
 
-// Watch the id prop for changes (e.g., navigating between openings)
-// and update the central store with the new selected opening ID.
+const currentLine = computed(() => {
+  if (!openingData.value || openingData.value.lines.length === 0) return null;
+  return openingData.value.lines[currentLineIndex.value];
+});
+
 watch(() => props.id, (newId) => {
   openingStore.selectedOpeningId = newId;
+  openingStore.currentLineIndex = 0;
 }, { immediate: true }); // 'immediate: true' runs this on component load.
 
 const boardEl = ref<HTMLElement | null>(null)
