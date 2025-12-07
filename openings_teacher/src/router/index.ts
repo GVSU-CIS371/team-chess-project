@@ -7,7 +7,15 @@
 // Composables
 import { createRouter, createWebHistory } from 'vue-router'
 import { setupLayouts } from 'virtual:generated-layouts'
-import { routes } from 'vue-router/auto-routes'
+import { routes, handleHotUpdate } from 'vue-router/auto-routes'
+
+// Set props: true on all routes
+routes.forEach(route => {
+  route.props = true;
+  if (route.children) {
+    route.children.forEach(child => child.props = true);
+  }
+});
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

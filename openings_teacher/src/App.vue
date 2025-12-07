@@ -6,7 +6,7 @@
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer">
-      <v-list nav>
+      <v-list nav v-model:opened="openedGroups">
         <v-list-item
           prepend-icon="mdi-home"
           title="Home"
@@ -18,12 +18,23 @@
           Openings
         </v-list-subheader>
 
-        <v-list-item
-          v-for="opening in openings"
-          :key="opening.id"
-          :title="opening.name"
-          :to="`/openings/${opening.id}`"
-        ></v-list-item>
+        <v-list-group v-for="opening in openings" :key="opening.id" :value="opening.id">
+          <template v-slot:activator="{ props }">
+            <v-list-item
+              v-bind="props"
+              :title="opening.name"
+              :to="`/openings/${opening.id}`"
+            >
+              <template v-slot:append></template>
+            </v-list-item>
+          </template>
+
+          <v-list-item
+            v-for="line in opening.lines"
+            :key="line.name"
+            :title="line.name"
+          ></v-list-item>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
 
@@ -34,14 +45,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, onMounted } from 'vue'
-  import { useOpeningsStore } from '@/stores/openingStore'
+  import { ref, onMounted, watch } from 'vue'
+  import { useOpeningStore } from '@/stores/openingStore'
   import { storeToRefs } from 'pinia'
 
   const drawer = ref(true)
-  const openingsStore = useOpeningsStore()
-  const { openings } = storeToRefs(openingsStore)
+  const openingStore = useOpeningStore()
+  const { openings, selectedOpeningId } = storeToRefs(openingStore)
+
+  const openedGroups = ref<string[]>([])
+
+  watch(selectedOpeningId, (newId) => {
+    openedGroups.value = newId ? [newId] : [];
+  });
 
   // Call the init action when the component is mounted
-  onMounted(() => openingsStore.init())
+  onMounted(() => openingStore.init())
 </script>

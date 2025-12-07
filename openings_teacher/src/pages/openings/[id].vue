@@ -1,10 +1,13 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12" class="text-center">
-        <h1 class="text-h3 mb-2">Opening View</h1>
-        <h2 class="text-h5 font-weight-light">Line</h2>
-        <p class="text-body-1 mt-1">description</p>
+      <v-col v-if="openingData" cols="12" class="text-center">
+        <h1 class="text-h3 mb-2">{{ openingData.name }}</h1>
+        <h2 class="text-h5 font-weight-light">{{ openingData.lines }}</h2>
+        <p class="text-body-1 mt-1">{{ openingData.description }}</p>
+      </v-col>
+      <v-col v-else>
+        <p class="text-center">Loading opening...</p>
       </v-col>
 
       <v-col cols="12" class="d-flex justify-center my-4">
@@ -22,10 +25,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useOpeningsStore } from '@/stores/openingStore.ts'
-// Import the chessboard.js library's CSS and JS
+import { ref, onMounted, computed, watch } from 'vue'
+import { useOpeningStore } from '@/stores/openingStore.ts'
 import '@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.css';
 
 // This tells TypeScript that a global `window.Chessboard` will exist at runtime.
@@ -33,30 +34,35 @@ declare global {
   interface Window { Chessboard: any; $: any; }
 }
 
-const route = useRoute()
-const openingsStore = useOpeningsStore()
+const props = defineProps<{
+  id: string;
+}>();
 
-  openingsStore.init();
+const openingStore = useOpeningStore();
+
+const openingData = computed(() => openingStore.getOpening(props.id));
+
+// Watch the id prop for changes (e.g., navigating between openings)
+// and update the central store with the new selected opening ID.
+watch(() => props.id, (newId) => {
+  openingStore.selectedOpeningId = newId;
+}, { immediate: true }); // 'immediate: true' runs this on component load.
 
 const boardEl = ref<HTMLElement | null>(null)
 const board = ref<any>(null);
 
 onMounted(() => {
-  // Define an async function to handle the board setup.
-  // This avoids using `async` directly on the onMounted callback.
   const initializeBoard = async () => {
     if (boardEl.value) {
-      // 2. Dynamically import the chessboard.js script.
       await import('@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.js');
 
-      // 3. Now that the script has loaded, initialize the board.
       board.value = new window.Chessboard(boardEl.value, {
         position: 'start',
         pieceTheme: '/img/chesspieces/wikipedia/{piece}.png'
       });
     }
   };
-  // Call the async setup function.
+
   initializeBoard();
 });
 </script>

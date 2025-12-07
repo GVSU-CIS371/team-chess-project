@@ -6,6 +6,7 @@ interface line {
 interface opening {
     id: string;
     name: string;
+    description: string;
     lines: line[];
 };
 export type { opening, line };
