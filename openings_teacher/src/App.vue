@@ -34,12 +34,14 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
+  import { useOpeningsStore } from '@/stores/openingStore'
+  import { storeToRefs } from 'pinia'
 
   const drawer = ref(true)
-  const openings = [
-    { id: 'ruy-lopez', name: 'Ruy López' },
-    { id: 'sicilian-defense', name: 'Sicilian Defense' },
-    { id: 'italian-game', name: 'Italian Game' },
-  ]
+  const openingsStore = useOpeningsStore()
+  const { openings } = storeToRefs(openingsStore)
+
+  // Call the init action when the component is mounted
+  onMounted(() => openingsStore.init())
 </script>
