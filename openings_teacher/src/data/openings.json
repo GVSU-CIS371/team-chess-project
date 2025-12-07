@@ -2,6 +2,8 @@
     {
         "id": "karo-kann-defense",
         "name": "Karo-Kann Defense",
+        "description": "placeholder",
+        "color": "black",
         "lines": [
             {
             "name": "Classical Variation",
@@ -16,6 +18,8 @@
     {
         "id": "scandinavian-defense",
         "name": "Scandinavian Defense",
+        "description": "placeholder",
+        "color": "white",
         "lines": [
             {
             "name": "Main Line",
@@ -30,6 +34,8 @@
     {
         "id": "sicilian-defense",
         "name": "Sicilian Defense",
+        "description": "placeholder",
+        "color": "white",
         "lines": [
             {
                 "name": "Najdorf Variation",
@@ -48,6 +54,8 @@
     {
         "id": "ruy-lopez",
         "name": "Ruy López",
+        "description": "placeholder",
+        "color": "white",
         "lines": [
             {
                 "name": "Morphy Defense",
@@ -66,6 +74,8 @@
     {
         "id": "queens-gambit",
         "name": "Queen's Gambit",
+        "description": "placeholder",
+        "color": "white",
         "lines": [
             {
                 "name": "Accepted: Classical Variation",

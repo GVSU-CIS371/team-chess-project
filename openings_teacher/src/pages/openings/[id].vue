@@ -64,11 +64,20 @@ onMounted(() => {
 
       board.value = new window.Chessboard(boardEl.value, {
         position: 'start',
-        pieceTheme: '/img/chesspieces/wikipedia/{piece}.png'
+        pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
+        orientation: openingData.value?.color || 'white',
       });
     }
   };
 
   initializeBoard();
+});
+
+// Watch for changes in the current line and update the board's orientation and position.
+watch(openingData, (newOpening) => {
+  // Ensure the board and the new line data exist
+  if (board.value && newOpening) {
+    board.value.orientation(newOpening.color);
+  }
 });
 </script>
