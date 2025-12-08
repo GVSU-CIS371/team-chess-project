@@ -1,5 +1,6 @@
 <template>
   <v-container>
+    <!-- Header and Opening Info -->
     <v-row justify="center">
       <v-col v-if="openingData" cols="12" class="text-center">
         <h1 class="text-h3 mb-2">{{ openingData.name }}</h1>
@@ -10,11 +11,20 @@
         <p class="text-center">Loading opening...</p>
       </v-col>
 
+      <!-- Chessboard -->
       <v-col cols="12" class="d-flex justify-center my-4">
         <div ref="boardEl" style="width: 400px; max-width: 100%;"></div>
       </v-col>
 
+      <!-- Move Feedback -->
+      <v-col v-if="moveFeedback" cols="12" class="text-center">
+        <v-alert type="error" variant="tonal" density="compact" max-width="400px" class="mx-auto">
+          {{ moveFeedback }}
+        </v-alert>
+      </v-col>
+
       <template v-if="openingData">
+        <!-- Line Navigation -->
         <v-col cols="auto">
           <v-btn 
             @click="openingStore.currentLineIndex = Math.max(openingStore.currentLineIndex - 1, 0)">
@@ -27,6 +37,11 @@
             Next Line
           </v-btn>
         </v-col>
+        <v-col cols="12" class="d-flex justify-center mt-2">
+            <v-btn @click="resetLine" color="secondary">
+              Reset Line
+            </v-btn>
+        </v-col>
       </template>
     </v-row>
   </v-container>
@@ -34,8 +49,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useOpeningStore } from '@/stores/openingStore.ts'
 import '@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.css';
+import { Chess } from 'chess.js';
+import $ from 'jquery';
 
 declare global {
   interface Window { Chessboard: any; $: any; }
@@ -52,6 +70,8 @@ const currentLine = computed(() => {
   if (!openingData.value || openingData.value.lines.length === 0) return null;
   return openingData.value.lines[currentLineIndex.value];
 });
+
+// --- Board and Game State ---
 const boardEl = ref<HTMLElement | null>(null)
 const board = ref<any>(null);
 const whiteMoves = computed(() => currentLine.value ? currentLine.value.moves.filter((_, i) => i % 2 === 0) : []);
@@ -64,28 +84,114 @@ const opponentMoves = computed(() => {
   if (!openingData.value) return [];
   return openingData.value.color === 'white' ? blackMoves.value : whiteMoves.value;
 });
+const game = ref(new Chess());
+const moveIndex = ref(0); // Tracks the current move number in the sequence
+const moveFeedback = ref<string | null>(null);
 
+// --- Watchers to keep state in sync ---
 watch(() => props.id, (newId) => {
   openingStore.selectedOpeningId = newId;
   openingStore.currentLineIndex = 0;
-}, { immediate: true }); // 'immediate: true' runs this on component load.
+  resetLine();
+}, { immediate: true });
 
 watch(openingData, (newOpening) => {
   if (board.value && newOpening) {
     board.value.orientation(newOpening.color);
+    resetLine();
   }
 });
+
+watch(currentLine, () => {
+  resetLine();
+});
+
+function makeOpponentMove() {
+  if (moveIndex.value < opponentMoves.value.length) {
+    const opponentMove = opponentMoves.value[moveIndex.value];
+    
+    setTimeout(() => {
+      game.value.move(opponentMove);
+      board.value.position(game.value.fen());
+    }, 300);
+  }
+}
+
+function resetLine() {
+  game.value.reset();
+  if (board.value) {
+    board.value.position(game.value.fen());
+  }
+  moveIndex.value = 0;
+  moveFeedback.value = null;
+
+  if (openingData.value?.color === 'black') {
+    makeOpponentMove();
+  }
+}
+
+const onDrop = (source: string, target: string) => {
+  moveFeedback.value = null; // Clear previous feedback
+
+  // Create a move object for chess.js
+  const move = {
+    from: source,
+    to: target,
+    promotion: 'q'
+  };
+
+  const tempGame = new Chess(game.value.fen());
+  const moveResult = tempGame.move(move);
+
+  if (moveResult === null) {
+    return 'snapback';
+  }
+
+  const expectedMove = playerMoves.value[moveIndex.value];
+
+  if (moveResult.san === expectedMove) {
+    game.value.move(move); // Advance the main game state
+
+    if(openingData.value?.color === 'white') {
+      makeOpponentMove();
+      moveIndex.value++;
+    } else {
+      moveIndex.value++;
+      makeOpponentMove();
+    }
+  } else {
+    // Incorrect move
+    moveFeedback.value = `Incorrect. The expected move was ${expectedMove}.`;
+    return 'snapback';
+  }
+};
 
 onMounted(() => {
   const initializeBoard = async () => {
     if (boardEl.value) {
+      window.$ = $;
+
+      // Dynamically import dependencies in the correct order
       await import('@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.js');
 
       board.value = new window.Chessboard(boardEl.value, {
         position: 'start',
         pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
         orientation: openingData.value?.color || 'white',
-        draggable: true
+        draggable: true,
+        moveOffBoard: true,
+        onDrop: onDrop,
+        // This prevents pieces from moving if it's not their turn
+        onDragStart: (source, piece) => {
+          if (game.value.isGameOver() || 
+              (game.value.turn() === 'w' && piece.search(/^b/) !== -1) ||
+              (game.value.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            return false;
+          }
+          // Also check if we are at the end of the line for the player
+          if (moveIndex.value >= playerMoves.value.length) return false;
+          return true;
+        }
       });
     }
   };
