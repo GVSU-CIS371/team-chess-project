@@ -23,7 +23,7 @@
         </v-col>
         <v-col cols="auto">
           <v-btn 
-            @click="openingStore.currentLineIndex = Math.min(openingStore.currentLineIndex + 1, openingData?.lines.length - 1)">
+            @click="openingStore.currentLineIndex = Math.min(openingStore.currentLineIndex + 1, openingData.lines.length - 1)">
             Next Line
           </v-btn>
         </v-col>
@@ -47,12 +47,22 @@ const props = defineProps<{
 
 const openingStore = useOpeningStore();
 const { currentLineIndex } = storeToRefs(openingStore);
-
 const openingData = computed(() => openingStore.getOpening(props.id));
-
 const currentLine = computed(() => {
   if (!openingData.value || openingData.value.lines.length === 0) return null;
   return openingData.value.lines[currentLineIndex.value];
+});
+const boardEl = ref<HTMLElement | null>(null)
+const board = ref<any>(null);
+const whiteMoves = computed(() => currentLine.value ? currentLine.value.moves.filter((_, i) => i % 2 === 0) : []);
+const blackMoves = computed(() => currentLine.value ? currentLine.value.moves.filter((_, i) => i % 2 === 1) : []);
+const playerMoves = computed(() => {
+  if (!openingData.value) return [];
+  return openingData.value.color === 'white' ? whiteMoves.value : blackMoves.value;
+});
+const opponentMoves = computed(() => {
+  if (!openingData.value) return [];
+  return openingData.value.color === 'white' ? blackMoves.value : whiteMoves.value;
 });
 
 watch(() => props.id, (newId) => {
@@ -60,8 +70,11 @@ watch(() => props.id, (newId) => {
   openingStore.currentLineIndex = 0;
 }, { immediate: true }); // 'immediate: true' runs this on component load.
 
-const boardEl = ref<HTMLElement | null>(null)
-const board = ref<any>(null);
+watch(openingData, (newOpening) => {
+  if (board.value && newOpening) {
+    board.value.orientation(newOpening.color);
+  }
+});
 
 onMounted(() => {
   const initializeBoard = async () => {
@@ -72,6 +85,7 @@ onMounted(() => {
         position: 'start',
         pieceTheme: '/img/chesspieces/wikipedia/{piece}.png',
         orientation: openingData.value?.color || 'white',
+        draggable: true
       });
     }
   };
@@ -79,11 +93,5 @@ onMounted(() => {
   initializeBoard();
 });
 
-// Watch for changes in the current line and update the board's orientation and position.
-watch(openingData, (newOpening) => {
-  // Ensure the board and the new line data exist
-  if (board.value && newOpening) {
-    board.value.orientation(newOpening.color);
-  }
-});
+
 </script>
