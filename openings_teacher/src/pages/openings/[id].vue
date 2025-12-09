@@ -16,6 +16,18 @@
         <div ref="boardEl" style="width: 400px; max-width: 100%;"></div>
       </v-col>
 
+      <!-- Expected Move Display -->
+      <v-col v-if="expectedMove" cols="12" class="text-center">
+        <p class="text-h6 font-weight-regular">
+          Your move: <strong class="text-primary">{{ expectedMove }}</strong>
+        </p>
+      </v-col>
+      <v-col v-else cols="12" class="text-center">
+        <p class="text-h6 font-weight-regular">
+          <strong class="text-primary">You've Reached The End of This Line</strong>
+        </p>
+      </v-col>
+
       <!-- Move Feedback -->
       <v-col v-if="moveFeedback" cols="12" class="text-center">
         <v-alert type="error" variant="tonal" density="compact" max-width="400px" class="mx-auto">
@@ -87,6 +99,12 @@ const opponentMoves = computed(() => {
 const game = ref(new Chess());
 const moveIndex = ref(0); // Tracks the current move number in the sequence
 const moveFeedback = ref<string | null>(null);
+const expectedMove = computed(() => {
+  if (!playerMoves.value || moveIndex.value >= playerMoves.value.length) {
+    return null;
+  }
+  return playerMoves.value[moveIndex.value];
+});
 
 // --- Watchers to keep state in sync ---
 watch(() => props.id, (newId) => {
@@ -147,9 +165,7 @@ const onDrop = (source: string, target: string) => {
     return 'snapback';
   }
 
-  const expectedMove = playerMoves.value[moveIndex.value];
-
-  if (moveResult.san === expectedMove) {
+  if (moveResult.san === expectedMove.value) {
     game.value.move(move); // Advance the main game state
 
     if(openingData.value?.color === 'white') {
@@ -161,7 +177,7 @@ const onDrop = (source: string, target: string) => {
     }
   } else {
     // Incorrect move
-    moveFeedback.value = `Incorrect. The expected move was ${expectedMove}.`;
+    moveFeedback.value = `Incorrect. The expected move was ${expectedMove.value}.`;
     return 'snapback';
   }
 };
