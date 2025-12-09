@@ -196,6 +196,7 @@ onMounted(() => {
         orientation: openingData.value?.color || 'white',
         draggable: true,
         moveOffBoard: true,
+        dropOffBoard: 'snapback',
         onDrop: onDrop,
         // This prevents pieces from moving if it's not their turn
         onDragStart: (source, piece) => {
