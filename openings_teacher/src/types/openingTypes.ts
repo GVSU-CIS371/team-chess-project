@@ -1,4 +1,5 @@
 interface line {
+    id: string;
     name: string;
     moves: string[];
 }

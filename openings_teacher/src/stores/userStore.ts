@@ -7,11 +7,8 @@ import {
   getDocs,
   setDoc,
   doc,
-  QuerySnapshot,
-  QueryDocumentSnapshot,
-  onSnapshot,
-  query,
-  where,
+  arrayUnion,
+  updateDoc,
 } from "firebase/firestore";
 
 export const useUserStore = defineStore('userStore', {
@@ -23,5 +20,16 @@ export const useUserStore = defineStore('userStore', {
     setUser(user: User | null) {
       this.user = user;
     },
+    async markLineCompleted(lineId: string) {
+      if (!this.user) return;
+
+      const userDocRef = doc(db, 'users', this.user.uid);
+
+      try {
+        await setDoc(userDocRef, { completedLines: arrayUnion(lineId) }, { merge: true });
+      } catch (error) {
+        console.error("Error marking line as completed:", error);
+      }
+    }
   }
 })

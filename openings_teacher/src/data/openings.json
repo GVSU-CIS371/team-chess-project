@@ -7,10 +7,12 @@
         "lines": [
             {
             "name": "Classical Variation",
+            "id": "kk1",
             "moves": ["e4", "c6", "d4", "d5", "Nc3", "dxe4", "Nxe4", "Bf5"]
             },
             {
             "name": "Fantasy Variation",
+            "id": "kk2",
             "moves": ["e4", "c6", "d4", "d5", "f3"]
             }
         ]
@@ -23,10 +25,12 @@
         "lines": [
             {
             "name": "Main Line",
+            "id": "sc1",
             "moves": ["e4", "d5", "exd5", "Qxd5", "Nc3", "Qa5"]
             },
             {
             "name": "Portuguese Variation",
+            "id": "sc2",
             "moves": ["e4", "d5", "exd5", "Nf6"]
             }
         ]
@@ -39,14 +43,17 @@
         "lines": [
             {
                 "name": "Najdorf Variation",
+                "id": "sic1",
                 "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "a6"]
             },
             {
                 "name": "Dragon Variation",
+                "id": "sic2",
                 "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "g6"]
             },
             {
                 "name": "Classical Variation",
+                "id": "sic3",
                 "moves": ["e4", "c5", "Nf3", "d6", "d4", "cxd4", "Nxd4", "Nf6", "Nc3", "Nc6"]
             }
         ]
@@ -59,10 +66,12 @@
         "lines": [
             {
                 "name": "Morphy Defense",
+                "id": "rl1",
                 "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "a6"]
             },
             {
                 "name": "Berlin Defense",
+                "id": "rl2",
                 "moves": ["e4", "e5", "Nf3", "Nc6", "Bb5", "Nf6"]
             },
             {

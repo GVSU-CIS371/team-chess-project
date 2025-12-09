@@ -62,7 +62,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useOpeningStore } from '@/stores/openingStore.ts'
+import { useOpeningStore } from '@/stores/openingStore.ts';
+import { useUserStore } from '@/stores/userStore.ts';
 import '@chrisoakman/chessboardjs/dist/chessboard-1.0.0.min.css';
 import { Chess } from 'chess.js';
 import $ from 'jquery';
@@ -76,6 +77,7 @@ const props = defineProps<{
 }>();
 
 const openingStore = useOpeningStore();
+const userStore = useUserStore();
 const { currentLineIndex } = storeToRefs(openingStore);
 const openingData = computed(() => openingStore.getOpening(props.id));
 const currentLine = computed(() => {
@@ -101,6 +103,7 @@ const moveIndex = ref(0); // Tracks the current move number in the sequence
 const moveFeedback = ref<string | null>(null);
 const expectedMove = computed(() => {
   if (!playerMoves.value || moveIndex.value >= playerMoves.value.length) {
+    userStore.markLineCompleted(currentLine.value?.id || "");
     return null;
   }
   return playerMoves.value[moveIndex.value];
