@@ -34,7 +34,13 @@
             :key="line.name"
             :title="line.name"
             @click="openingStore.currentLineIndex = index"
-          ></v-list-item>
+          >
+            <template v-slot:append>
+              <v-icon v-if="userStore.completedLines.includes(line.id)" color="success">
+                mdi-check-circle
+              </v-icon>
+            </template>
+          </v-list-item>
         </v-list-group>
       </v-list>
     </v-navigation-drawer>
@@ -48,10 +54,12 @@
 <script lang="ts" setup>
   import { ref, onMounted, watch } from 'vue'
   import { useOpeningStore } from '@/stores/openingStore'
+  import { useUserStore } from '@/stores/userStore'
   import { storeToRefs } from 'pinia'
 
   const drawer = ref(true)
   const openingStore = useOpeningStore()
+  const userStore = useUserStore()
   const { openings, selectedOpeningId, currentLineIndex } = storeToRefs(openingStore)
 
   const openedGroups = ref<string[]>([])

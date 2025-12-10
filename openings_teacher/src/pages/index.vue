@@ -1,11 +1,10 @@
 <template>
+  <h1>Sam's Chess Openings Teacher</h1>
+  <p>Here you can learn and practice some of the most common lines from some of the most popular chess openings.</p>
   <v-card>
     <v-card-title>Sam's Chess Openings Teacher</v-card-title>
     <div v-if="!userStore.user">
       <v-card-text>
-        <p>
-          Here you can learn and practice some of the most common lines from some of the most popular chess openings.
-        </p>
         <p>
           You're free to jump in and try out any of the openings, but if you're a returning user or want to save your progress for 
           next time, click the button below.
