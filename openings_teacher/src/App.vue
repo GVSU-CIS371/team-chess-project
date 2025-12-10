@@ -3,6 +3,14 @@
     <v-app-bar>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Openings Teacher</v-toolbar-title>
+      <v-banner-text v-if="userStore.user" class="flex-grow-1 text-right">
+        Signed in as {{ userStore.user.displayName }}
+      </v-banner-text>
+      <v-avatar 
+            v-if="userStore.user && userStore.user.photoURL" 
+            :image="userStore.user.photoURL"
+            style="position: absolute; top: 16px; right: 16px; z-index: 1;"
+          ></v-avatar>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer">
