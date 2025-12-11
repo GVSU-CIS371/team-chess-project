@@ -164,9 +164,15 @@ const onDrop = (source: string, target: string) => {
   };
 
   const tempGame = new Chess(game.value.fen());
-  const moveResult = tempGame.move(move);
+  let moveResult = null;
+  try {
+    moveResult = tempGame.move(move);
+  } catch (e) {
+    moveResult = null;
+  }
 
   if (moveResult === null) {
+    moveFeedback.value = 'Illegal move.';
     return 'snapback';
   }
 
