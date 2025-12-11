@@ -4,8 +4,10 @@
     <v-row justify="center">
       <v-col v-if="openingData" cols="12" class="text-center">
         <h1 class="text-h3 mb-2">{{ openingData.name }}</h1>
-        <h2 v-if="currentLine" class="text-h5 font-weight-light">{{ currentLine.name }}</h2>
-        <p class="text-body-1 mt-1">{{ openingData.description }}</p>
+        <h2 v-if="currentLine" class="text-h5 font-weight-light mb-4">{{ currentLine.name }}</h2>
+        <v-sheet max-width="800" class="mx-auto bg-transparent">
+          <p class="text-body-1 text-medium-emphasis text-justify">{{ openingData.description }}</p>
+        </v-sheet>
       </v-col>
       <v-col v-else>
         <p class="text-center">Loading opening...</p>
