@@ -133,10 +133,12 @@ function makeOpponentMove() {
   if (moveIndex.value < opponentMoves.value.length) {
     const opponentMove = opponentMoves.value[moveIndex.value];
     
-    setTimeout(() => {
+    if (opponentMove) {
+      setTimeout(() => {
       game.value.move(opponentMove);
       board.value.position(game.value.fen());
-    }, 300);
+      }, 300);
+    }
   }
 }
 
@@ -210,7 +212,7 @@ onMounted(() => {
         dropOffBoard: 'snapback',
         onDrop: onDrop,
         // This prevents pieces from moving if it's not their turn
-        onDragStart: (source, piece) => {
+        onDragStart: (source: string, piece: string) => {
           if (game.value.isGameOver() || 
               (game.value.turn() === 'w' && piece.search(/^b/) !== -1) ||
               (game.value.turn() === 'b' && piece.search(/^w/) !== -1)) {
